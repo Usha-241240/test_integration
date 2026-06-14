@@ -5,80 +5,242 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Генератор идей для постов</title>
   <style>
+    :root {
+      --bg-deep: #0d1117;
+      --bg-card: rgba(22, 27, 34, 0.85);
+      --accent-coral: #ff7b54;
+      --accent-teal: #2dd4bf;
+      --accent-gold: #fbbf24;
+      --text-primary: #e6edf3;
+      --text-muted: #8b949e;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+      --radius: 14px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
     *,
     *::before,
     *::after {
       box-sizing: border-box;
     }
 
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes fadeSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes itemReveal {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 123, 84, 0.35); }
+      50% { box-shadow: 0 0 0 8px rgba(255, 123, 84, 0); }
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
+      min-height: 100dvh;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #1a1a2e;
+      background: linear-gradient(
+        -45deg,
+        #0d1117,
+        #161b22,
+        #1a2332,
+        #0f2027
+      );
+      background-size: 400% 400%;
+      animation: gradientShift 18s ease infinite;
+      color: var(--text-primary);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(255, 123, 84, 0.18), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(45, 212, 191, 0.12), transparent);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .container {
+      position: relative;
+      z-index: 1;
       max-width: 720px;
       margin: 0 auto;
-      padding: 2.5rem 1.5rem;
+      padding:
+        calc(1.5rem + var(--safe-top))
+        calc(1rem + var(--safe-right))
+        calc(1.5rem + var(--safe-bottom))
+        calc(1rem + var(--safe-left));
     }
 
     h1 {
+      margin: 0 0 0.5rem;
+      text-align: center;
+      font-size: clamp(1.375rem, 5vw, 2.125rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-teal) 50%, var(--accent-coral) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeSlideDown 0.7s ease both;
+    }
+
+    .subtitle {
       margin: 0 0 2rem;
       text-align: center;
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      font-size: clamp(0.875rem, 2.5vw, 1rem);
+      color: var(--text-muted);
+      animation: fadeSlideDown 0.7s ease 0.1s both;
     }
 
     .buttons {
-      display: flex;
-      flex-direction: column;
+      display: grid;
       gap: 0.75rem;
+      animation: fadeSlideUp 0.7s ease 0.2s both;
     }
 
     button {
+      position: relative;
+      overflow: hidden;
+      min-height: 52px;
       padding: 0.875rem 1.25rem;
-      font-size: 1rem;
+      font-size: clamp(0.9375rem, 2.8vw, 1rem);
       font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      background: #fff;
-      color: #5a4a8a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--text-primary);
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transition:
+        transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    button::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 123, 84, 0.15), rgba(45, 212, 191, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    button:hover,
+    button:focus-visible {
+      transform: translateY(-3px);
+      border-color: rgba(255, 123, 84, 0.4);
+      box-shadow: 0 8px 28px rgba(255, 123, 84, 0.15);
+    }
+
+    button:hover::after,
+    button:focus-visible::after {
+      opacity: 1;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--accent-teal);
+      outline-offset: 2px;
     }
 
     button:active {
-      transform: translateY(0);
+      transform: scale(0.97);
+      transition-duration: 0.1s;
     }
 
+    button.is-loading {
+      pointer-events: none;
+      animation: pulseGlow 0.8s ease;
+    }
+
+    #btn-expert { animation-delay: 0.25s; }
+    #btn-stories { animation-delay: 0.3s; }
+    #btn-plan { animation-delay: 0.35s; }
+
     .result {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      margin-top: 1.75rem;
+      padding: 1.25rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
       min-height: 80px;
+      animation: scaleIn 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both;
     }
 
     .result:empty {
       display: none;
     }
 
+    .result.is-updating {
+      animation: scaleIn 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+    }
+
     .result h2 {
       margin: 0 0 1rem;
-      font-size: 1.125rem;
-      color: #5a4a8a;
+      font-size: clamp(1rem, 3vw, 1.125rem);
+      color: var(--accent-coral);
+      animation: fadeSlideDown 0.4s ease both;
     }
 
     .result ol,
@@ -88,35 +250,112 @@
     }
 
     .result li {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.625rem;
+      color: var(--text-primary);
+      animation: itemReveal 0.45s ease both;
     }
 
     .result li:last-child {
       margin-bottom: 0;
     }
 
+    .result li:nth-child(1) { animation-delay: 0.05s; }
+    .result li:nth-child(2) { animation-delay: 0.1s; }
+    .result li:nth-child(3) { animation-delay: 0.15s; }
+    .result li:nth-child(4) { animation-delay: 0.2s; }
+    .result li:nth-child(5) { animation-delay: 0.25s; }
+    .result li:nth-child(6) { animation-delay: 0.3s; }
+    .result li:nth-child(7) { animation-delay: 0.35s; }
+
     .plan-day {
       margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #eee;
+      padding: 0.75rem 0.875rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--accent-teal);
+      animation: itemReveal 0.45s ease both;
     }
+
+    .plan-day:nth-child(2) { animation-delay: 0.05s; border-left-color: var(--accent-coral); }
+    .plan-day:nth-child(3) { animation-delay: 0.1s; }
+    .plan-day:nth-child(4) { animation-delay: 0.15s; border-left-color: var(--accent-gold); }
+    .plan-day:nth-child(5) { animation-delay: 0.2s; }
+    .plan-day:nth-child(6) { animation-delay: 0.25s; border-left-color: var(--accent-coral); }
+    .plan-day:nth-child(7) { animation-delay: 0.3s; }
+    .plan-day:nth-child(8) { animation-delay: 0.35s; border-left-color: var(--accent-gold); }
 
     .plan-day:last-child {
       margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
     }
 
     .plan-day strong {
       display: block;
-      color: #5a4a8a;
-      margin-bottom: 0.25rem;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-teal);
+      margin-bottom: 0.35rem;
+    }
+
+    .plan-day span {
+      font-size: clamp(0.875rem, 2.5vw, 0.9375rem);
+      color: var(--text-primary);
+    }
+
+    @media (min-width: 480px) {
+      .container {
+        padding:
+          calc(2rem + var(--safe-top))
+          calc(1.5rem + var(--safe-right))
+          calc(2rem + var(--safe-bottom))
+          calc(1.5rem + var(--safe-left));
+      }
+
+      .buttons {
+        gap: 1rem;
+      }
+
+      button {
+        min-height: 56px;
+        padding: 1rem 1.5rem;
+      }
+
+      .result {
+        padding: 1.75rem;
+        margin-top: 2rem;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      #btn-plan {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      body {
+        animation: none;
+        background-size: auto;
+      }
     }
   </style>
 </head>
 <body>
   <main class="container">
     <h1>Генератор идей для постов</h1>
+    <p class="subtitle">Нажмите кнопку — получите готовые идеи для контента</p>
 
     <div class="buttons">
       <button type="button" id="btn-expert">5 идей постов для экспертов</button>
@@ -203,7 +442,7 @@
       const days = daysOfWeek
         .map(
           (day, index) =>
-            `<div class="plan-day"><strong>${day}</strong>${topics[index]}</div>`
+            `<div class="plan-day"><strong>${day}</strong><span>${topics[index]}</span></div>`
         )
         .join('');
       return `<h2>Контент-план на неделю</h2>${days}`;
@@ -211,18 +450,27 @@
 
     const resultEl = document.getElementById('result');
 
-    document.getElementById('btn-expert').addEventListener('click', () => {
+    function showResult(html, button) {
+      button.classList.add('is-loading');
+      resultEl.classList.remove('is-updating');
+      void resultEl.offsetWidth;
+      resultEl.innerHTML = html;
+      resultEl.classList.add('is-updating');
+      setTimeout(() => button.classList.remove('is-loading'), 400);
+    }
+
+    document.getElementById('btn-expert').addEventListener('click', function () {
       const ideas = pickRandom(expertIdeas, 5);
-      resultEl.innerHTML = renderList('5 идей постов для экспертов', ideas);
+      showResult(renderList('5 идей постов для экспертов', ideas), this);
     });
 
-    document.getElementById('btn-stories').addEventListener('click', () => {
+    document.getElementById('btn-stories').addEventListener('click', function () {
       const ideas = pickRandom(storyIdeas, 3);
-      resultEl.innerHTML = renderList('3 идеи сторис на сегодня', ideas);
+      showResult(renderList('3 идеи сторис на сегодня', ideas), this);
     });
 
-    document.getElementById('btn-plan').addEventListener('click', () => {
-      resultEl.innerHTML = renderContentPlan();
+    document.getElementById('btn-plan').addEventListener('click', function () {
+      showResult(renderContentPlan(), this);
     });
   </script>
 </body>
