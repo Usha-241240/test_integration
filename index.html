@@ -4,7 +4,115 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Генератор идей для постов</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    h1 {
+      margin: 0 0 2rem;
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    button {
+      padding: 0.875rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #5a4a8a;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      min-height: 80px;
+    }
+
+    .result:empty {
+      display: none;
+    }
+
+    .result h2 {
+      margin: 0 0 1rem;
+      font-size: 1.125rem;
+      color: #5a4a8a;
+    }
+
+    .result ol,
+    .result ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .result li {
+      margin-bottom: 0.5rem;
+    }
+
+    .result li:last-child {
+      margin-bottom: 0;
+    }
+
+    .plan-day {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .plan-day:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .plan-day strong {
+      display: block;
+      color: #5a4a8a;
+      margin-bottom: 0.25rem;
+    }
+  </style>
 </head>
 <body>
   <main class="container">
@@ -19,6 +127,103 @@
     <section id="result" class="result" aria-live="polite"></section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    const expertIdeas = [
+      'Разбор типичной ошибки в вашей нише и как её избежать',
+      '5 инструментов, без которых вы не обойдётесь в работе',
+      'Миф vs реальность: что клиенты думают о вашей профессии',
+      'Кейс: как вы решили сложную задачу за короткий срок',
+      'Чек-лист для новичков в вашей области',
+      'Тренды в индустрии на этот год — ваш прогноз',
+      'Ответы на 3 самых частых вопроса от подписчиков',
+      'До и после: трансформация проекта с цифрами',
+      'Почему я перестал делать X и начал делать Y',
+      'Личный опыт: урок, который изменил ваш подход к работе',
+      'Сравнение двух популярных подходов в вашей сфере',
+      'Как вы строите доверие с новыми клиентами',
+      'Один совет, который сэкономил вам годы',
+      'Разбор вашего рабочего процесса по шагам',
+      'Что бы я сделал иначе, если начинал с нуля сегодня',
+    ];
+
+    const storyIdeas = [
+      'Опрос: «Что вам сложнее всего в …?» с двумя вариантами ответа',
+      'Закулисье рабочего дня — фото рабочего места с подписью',
+      'Быстрый совет в 15 секунд — говорите в камеру',
+      '«День из жизни» — 3–5 кадров с короткими подписями',
+      'До/после — покажите результат вашей работы',
+      'Вопрос дня: «Согласны или нет?» с реакцией-стикером',
+      'Мини-урок: один факт, который удивит аудиторию',
+      'Репост отзыва клиента с благодарностью',
+      '«3 вещи, которые я делаю каждое утро»',
+      'Таймер обратного отсчёта до анонса или события',
+      'Сторис-квиз: угадайте термин из вашей профессии',
+      'Покажите инструмент или книгу, которую рекомендуете',
+    ];
+
+    const planTopics = [
+      'Экспертный пост: разбор ошибки в нише',
+      'Сторис: опрос для аудитории',
+      'Кейс с результатами клиента',
+      'Короткий совет в Reels или сторис',
+      'Пост-чеклист для новичков',
+      'Закулисье рабочего процесса',
+      'Ответы на частые вопросы подписчиков',
+      'Сравнение двух подходов в профессии',
+      'Личная история и урок из опыта',
+      'Анонс или призыв к действию',
+      'Подборка полезных инструментов',
+      'Миф vs реальность в вашей сфере',
+      'Тренды и прогнозы на сезон',
+      'Отзыв клиента с комментарием',
+    ];
+
+    const daysOfWeek = [
+      'Понедельник',
+      'Вторник',
+      'Среда',
+      'Четверг',
+      'Пятница',
+      'Суббота',
+      'Воскресенье',
+    ];
+
+    function pickRandom(items, count) {
+      const shuffled = [...items].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+
+    function renderList(title, items) {
+      const listItems = items.map((item) => `<li>${item}</li>`).join('');
+      return `<h2>${title}</h2><ol>${listItems}</ol>`;
+    }
+
+    function renderContentPlan() {
+      const topics = pickRandom(planTopics, 7);
+      const days = daysOfWeek
+        .map(
+          (day, index) =>
+            `<div class="plan-day"><strong>${day}</strong>${topics[index]}</div>`
+        )
+        .join('');
+      return `<h2>Контент-план на неделю</h2>${days}`;
+    }
+
+    const resultEl = document.getElementById('result');
+
+    document.getElementById('btn-expert').addEventListener('click', () => {
+      const ideas = pickRandom(expertIdeas, 5);
+      resultEl.innerHTML = renderList('5 идей постов для экспертов', ideas);
+    });
+
+    document.getElementById('btn-stories').addEventListener('click', () => {
+      const ideas = pickRandom(storyIdeas, 3);
+      resultEl.innerHTML = renderList('3 идеи сторис на сегодня', ideas);
+    });
+
+    document.getElementById('btn-plan').addEventListener('click', () => {
+      resultEl.innerHTML = renderContentPlan();
+    });
+  </script>
 </body>
 </html>
